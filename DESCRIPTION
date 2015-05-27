@@ -1,0 +1,11 @@
+Package: svmSCORES
+Type: Package
+Title: Compute a vector of Platt scores with a bootstrap process. Intended for use with fdrID package.
+Version: 1.0
+Date: 2015-05-26
+Author: Nick Petraco
+Maintainer: <npetraco@gmail.com>
+Description: The fdrID package requires null (non-match) and non-null (match) scores as input for estimating fdr.
+License: GPL (>= 2)
+Imports: Rcpp (>= 0.11.5)
+LinkingTo: Rcpp
