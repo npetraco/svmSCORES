@@ -1,6 +1,6 @@
 #--------------------------------------------
 #' @title bootstrap.platt.scores
-#' @description Estimate svm Platt-score null and non-null distributions by group-wise bootstrap.
+#' @description Estimate svm Platt-score null and non-null distributions by group-wise bootstrap. Serial code.
 #' 
 #' @details Estimate svm Platt-score null (known non-matching) and non-null (known matching) distributions via a 
 #' group-wise bootstrap. Adapted from Storey and Tibshirani permutation method in PNAS. The SVM code used is from 
@@ -72,17 +72,7 @@ bootstrap.platt.scores<-function(dat.mat,lbls,nbs,svmtyp="C-classification",kern
     
     print(paste("B.S. Iter: ",i))
   }
-  
-  #print(warnings())
-  
-#   if(plotQ==TRUE) {
-#     
-#     hist(null.vec,probability=TRUE,xlim=c(0,1),ylim=c(0,ylim.max),col=rgb(1,0,0,1/4),main="",xlab="")
-#     par(new=TRUE)
-#     hist(nonnull.vec,probability=TRUE,xlim=c(0,1),ylim=c(0,ylim.max),col=rgb(0,1,0,1/4),main="Null(KNM, red) and Non-null(KM, green)",xlab="Platt-score")
-#     
-#   }
-  
+    
   print(paste("Maximum null score    : ",max(null.vec)))
   print(paste("Minimum non-null score: ",min(nonnull.vec)))
   

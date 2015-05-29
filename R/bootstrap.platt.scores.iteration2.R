@@ -22,7 +22,7 @@ bootstrap.platt.scores.iteration2 <- function(dat.mat, lbls, lbls.idxs, svmtyp, 
   nonnull.vec.chunk <- as.numeric(iter.score.km) #here, there is only one km score per observation
   
   #Build up vector of known non-match (null) scores.
-  null.vec.chunk <- rep(-1,nrow(iter.prob.mat))
+  null.vec.chunk <- rep(-1.0,nrow(iter.prob.mat))
   for(j in 1:nrow(iter.prob.mat)) {
     tmp.prob.vec <- iter.prob.mat[j,]
     null.vec.chunk[j] <- sample(tmp.prob.vec[-as.numeric(lbls[-mod.bsidx][j])],1)  #Just randomly grab one of the KNM scores 

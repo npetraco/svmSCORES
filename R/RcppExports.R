@@ -5,7 +5,3 @@ BootstrapIterKNMScores <- function(iterProbMat) {
     .Call('svmSCORES_BootstrapIterKNMScores', PACKAGE = 'svmSCORES', iterProbMat)
 }
 
-rcpp_hello_world <- function() {
-    .Call('svmSCORES_rcpp_hello_world', PACKAGE = 'svmSCORES')
-}
-
