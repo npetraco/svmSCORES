@@ -18,7 +18,6 @@ License: \tab GPL (>= 2)\cr
 The fdrID package requires null (non-match) and non-null (match) scores as input for estimating fdr. This package provides a set of scores derived from an SVM (Platt scores: Advances in large margin classifiers 10(3):61–74 (1999)) which can be used as the requisite input. The scores are obtained from a group-wise bootstrapping process which is designed to minimize the amount of dependence between the scores. The bootstrapping process is similar to the permutation method used to generate an estimate of the null score distribution in Storey and Tibshirani: Statistical significance for genomewide studies. PNAS 100(16):9440-9445 (2003).}
 \author{
 Nick Petraco
-
 Maintainer: <npetraco@gmail.com>
 }
 \references{

@@ -5,6 +5,17 @@
 
 using namespace Rcpp;
 
+// BootstrapIterKNMScores
+NumericVector BootstrapIterKNMScores(NumericMatrix iterProbMat);
+RcppExport SEXP svmSCORES_BootstrapIterKNMScores(SEXP iterProbMatSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< NumericMatrix >::type iterProbMat(iterProbMatSEXP);
+    __result = Rcpp::wrap(BootstrapIterKNMScores(iterProbMat));
+    return __result;
+END_RCPP
+}
 // rcpp_hello_world
 List rcpp_hello_world();
 RcppExport SEXP svmSCORES_rcpp_hello_world() {

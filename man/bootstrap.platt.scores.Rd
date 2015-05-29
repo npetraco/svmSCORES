@@ -5,7 +5,7 @@
 \title{bootstrap.platt.scores}
 \usage{
 bootstrap.platt.scores(dat.mat, lbls, nbs, svmtyp = "C-classification",
-  kern = "linear", pparams = 0.1, plotQ = FALSE, ylim.max = NULL)
+  kern = "linear", pparams = 0.1)
 }
 \arguments{
 \item{dat.mat}{A n by p data frame or matrix of variables. One row per pattern to classify.}
@@ -19,10 +19,6 @@ bootstrap.platt.scores(dat.mat, lbls, nbs, svmtyp = "C-classification",
 \item{kern}{Kernel type. See e1071 package documentation.}
 
 \item{pparams}{Kernel parameters. See e1071 package documentation.}
-
-\item{plotQ}{Plot boolean to see histograms of KM and KNM scores produced.}
-
-\item{ylim.max}{A convience plot parameter (max of the y-axis). Helps beautify the overlayed histograms of null/non-null scores}
 }
 \value{
 list of null and non-null scores

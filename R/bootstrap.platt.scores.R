@@ -15,8 +15,6 @@
 #' @param svmtyp      Support vector machine type. See e1071 package documentation.
 #' @param kern        Kernel type. See e1071 package documentation.
 #' @param pparams     Kernel parameters. See e1071 package documentation.
-#' @param plotQ       Plot boolean to see histograms of KM and KNM scores produced.
-#' @param ylim.max    A convience plot parameter (max of the y-axis). Helps beautify the overlayed histograms of null/non-null scores
 #' 
 #' @return list of null and non-null scores
 #' 
@@ -25,7 +23,7 @@
 #' @examples
 #' XXXX
 #--------------------------------------------
-bootstrap.platt.scores<-function(dat.mat,lbls,nbs,svmtyp="C-classification",kern="linear",pparams=0.1,plotQ=FALSE,ylim.max=NULL) {
+bootstrap.platt.scores<-function(dat.mat,lbls,nbs,svmtyp="C-classification",kern="linear",pparams=0.1) {
   
   #parse lbls into groups:
   lbls.idxs<-lapply(1:nlevels(lbls),function(x){which(lbls==levels(lbls)[x])})
@@ -77,13 +75,13 @@ bootstrap.platt.scores<-function(dat.mat,lbls,nbs,svmtyp="C-classification",kern
   
   #print(warnings())
   
-  if(plotQ==TRUE) {
-    
-    hist(null.vec,probability=TRUE,xlim=c(0,1),ylim=c(0,ylim.max),col=rgb(1,0,0,1/4),main="",xlab="")
-    par(new=TRUE)
-    hist(nonnull.vec,probability=TRUE,xlim=c(0,1),ylim=c(0,ylim.max),col=rgb(0,1,0,1/4),main="Null(KNM, red) and Non-null(KM, green)",xlab="Platt-score")
-    
-  }
+#   if(plotQ==TRUE) {
+#     
+#     hist(null.vec,probability=TRUE,xlim=c(0,1),ylim=c(0,ylim.max),col=rgb(1,0,0,1/4),main="",xlab="")
+#     par(new=TRUE)
+#     hist(nonnull.vec,probability=TRUE,xlim=c(0,1),ylim=c(0,ylim.max),col=rgb(0,1,0,1/4),main="Null(KNM, red) and Non-null(KM, green)",xlab="Platt-score")
+#     
+#   }
   
   print(paste("Maximum null score    : ",max(null.vec)))
   print(paste("Minimum non-null score: ",min(nonnull.vec)))
