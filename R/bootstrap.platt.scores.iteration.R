@@ -1,3 +1,6 @@
+#-------------------
+#Depricated.
+#-------------------
 bootstrap.platt.scores.iteration <- function(dat.mat, lbls, lbls.idxs, svmtyp, kern, pparams) {
   #Grab a bootstrap sample, bootstrapping out of each GROUP invididually:
   bsidx<-unlist(as.vector(sapply(1:length(lbls.idxs),function(x){sample(lbls.idxs[[x]],length(lbls.idxs[[x]]), replace=TRUE )})))
