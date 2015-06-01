@@ -4,8 +4,9 @@
 \alias{null.platt.nig.fit}
 \title{null.platt.nig.fit}
 \usage{
-null.platt.nig.fit(platt.null.vec, alpha.init, beta.init, delta.init, mu.init,
-  standardizeQ = FALSE, plotQ = FALSE)
+null.platt.nig.fit(platt.null.vec, alpha.init = NULL, beta.init = NULL,
+  delta.init = NULL, mu.init = NULL, standardizeQ = FALSE,
+  plotQ = FALSE)
 }
 \arguments{
 \item{platt.null.vec}{Vector of null (non-match) Platt scores from an SVM}

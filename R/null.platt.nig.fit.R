@@ -33,7 +33,7 @@
 #' @examples
 #' XXXX
 #--------------------------------------------
-null.platt.nig.fit <- function(platt.null.vec, alpha.init, beta.init, delta.init, mu.init, standardizeQ=FALSE, plotQ=FALSE) {
+null.platt.nig.fit <- function(platt.null.vec, alpha.init=NULL, beta.init=NULL, delta.init=NULL, mu.init=NULL, standardizeQ=FALSE, plotQ=FALSE) {
   
   #Take the log:
   lgs <- log(platt.null.vec)
@@ -44,7 +44,7 @@ null.platt.nig.fit <- function(platt.null.vec, alpha.init, beta.init, delta.init
   
   lgs <- sort(lgs)
   
-  nigFit.lgs <- nigFit(lgs, alpha = alpha.init, beta = beta.init, delta = delta.init, mu = mu.init, doplot = FALSE, method="mle")
+  nigFit.lgs <- fBasics::nigFit(lgs, alpha = alpha.init, beta = beta.init, delta = delta.init, mu = mu.init, doplot = FALSE, method="mle")
   
   alp.est <- nigFit.lgs@fit$estimate[1]
   bet.est <- nigFit.lgs@fit$estimate[2]
@@ -61,7 +61,7 @@ null.platt.nig.fit <- function(platt.null.vec, alpha.init, beta.init, delta.init
     split.screen( figs = c( 1, 2 ) )
     
     screen(1)
-    dens<-dnig(lgs, alpha=alp.est, beta=bet.est, delta=del.est, mu=mu.est)
+    dens <- fBasics::dnig(lgs, alpha=alp.est, beta=bet.est, delta=del.est, mu=mu.est)
     
     ylim.max <- max(dens,lgs.hist.info$density)
     xlim.max <- max(lgs,lgs.hist.info$breaks)
@@ -87,7 +87,7 @@ null.platt.nig.fit <- function(platt.null.vec, alpha.init, beta.init, delta.init
     #Empirical quantiles:
     Zt<-qemp(tax)
     #Quantiles from fit:
-    Zt.hat<-qnig(tax,alpha=alp.est,beta=bet.est,delta=del.est,mu=mu.est)
+    Zt.hat <- fBasics::qnig(tax,alpha=alp.est,beta=bet.est,delta=del.est,mu=mu.est)
     
     if(standardizeQ==TRUE){
       QQtitle <- "Q-Q plot for NIG fit to standardized log(null) hist"
@@ -114,11 +114,11 @@ null.platt.nig.fit <- function(platt.null.vec, alpha.init, beta.init, delta.init
     upi <- lgs.hist.info$breaks[i+1]
     loi <- lgs.hist.info$breaks[i]
     
-    fit.probs[i] <- pnig(upi, alpha=alp.est, beta=bet.est, delta=del.est, mu=mu.est) - pnig(loi, alpha=alp.est, beta=bet.est, delta=del.est, mu=mu.est)
+    fit.probs[i] <- fBasics::pnig(upi, alpha=alp.est, beta=bet.est, delta=del.est, mu=mu.est) - fBasics::pnig(loi, alpha=alp.est, beta=bet.est, delta=del.est, mu=mu.est)
     freq.expec[i] <- fit.probs[i] * length(platt.null.vec)
   }
   
-  plt <- pnig(lgs.hist.info$breaks[1], alpha=alp.est, beta=bet.est, delta=del.est, mu=mu.est)
+  plt <- fBasics::pnig(lgs.hist.info$breaks[1], alpha=alp.est, beta=bet.est, delta=del.est, mu=mu.est)
   prt <- 1-sum(c(plt,fit.probs))
   fit.probs <- c(plt,fit.probs,prt)
   
