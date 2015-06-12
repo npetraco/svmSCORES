@@ -6,7 +6,7 @@ using namespace Rcpp;
 using namespace std;
 
 // [[Rcpp::export]]
-SEXP compPvals(NumericVector nullvec, NumericVector vec) { //This seems to do fine. ~5x faster than in R alone.
+SEXP empiricalPvalues(NumericVector nullvec, NumericVector vec) { //This seems to do fine. ~5x faster than in R alone.
   
   int n = nullvec.size();
   int m = vec.size();
@@ -19,7 +19,7 @@ SEXP compPvals(NumericVector nullvec, NumericVector vec) { //This seems to do fi
       //cout<<count<<endl;
     }
     double val = ((double)count)/((double)n);
-    //Rcout << "Value: " << i <<  " " << val << endl;
+    //Rcout << "p-value #: " << i <<  " = " << val << endl;
     pvalVec[i] = val;
   }
   

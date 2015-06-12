@@ -1,5 +1,5 @@
 #--------------------------------------------
-#' @title null.platt.nig.fit
+#' @title null.logplatt.nig.fit
 #' 
 #' @description Normal inverse Gaussian fit for log null Platt scores.
 #' 
@@ -33,7 +33,7 @@
 #' @examples
 #' XXXX
 #--------------------------------------------
-null.platt.nig.fit <- function(platt.null.vec, alpha.init=NULL, beta.init=NULL, delta.init=NULL, mu.init=NULL, standardizeQ=FALSE, plotQ=FALSE) {
+null.logplatt.nig.fit <- function(platt.null.vec, alpha.init=NULL, beta.init=NULL, delta.init=NULL, mu.init=NULL, standardizeQ=FALSE, plotQ=FALSE) {
   
   #Take the log:
   lgs <- log(platt.null.vec)

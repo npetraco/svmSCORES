@@ -22,7 +22,7 @@
 #' @examples
 #' XXXX
 #--------------------------------------------
-nonnull.platt.on.validation.set <- function(dat.tr, lbls.tr, dat.val, lbls.val, svmtyp, kern, pparams) {
+nonnull.logplatt.on.validation.set <- function(dat.tr, lbls.tr, dat.val, lbls.val, svmtyp, kern, pparams) {
   
   #Fit SVM to the training sample
   svm.model<-e1071::svm(dat.tr, lbls.tr, scale=FALSE, type=svmtyp, kernel=kern, cost=pparams, fitted=TRUE, probability=TRUE)
