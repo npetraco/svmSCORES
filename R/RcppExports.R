@@ -5,15 +5,3 @@ BootstrapIterKNMScores <- function(iterProbMat) {
     .Call('svmSCORES_BootstrapIterKNMScores', PACKAGE = 'svmSCORES', iterProbMat)
 }
 
-empiricalPvalues <- function(nullvec, vec) {
-    .Call('svmSCORES_empiricalPvalues', PACKAGE = 'svmSCORES', nullvec, vec)
-}
-
-compPvals2 <- function(nullvec, vec) {
-    .Call('svmSCORES_compPvals2', PACKAGE = 'svmSCORES', nullvec, vec)
-}
-
-compPvals3 <- function(nullvec, vec) {
-    .Call('svmSCORES_compPvals3', PACKAGE = 'svmSCORES', nullvec, vec)
-}
-
