@@ -54,6 +54,16 @@ null.logplatt.nig.fit <- function(platt.null.vec, alpha.init=NULL, beta.init=NUL
   #This is needed for both plots and fit diagnostics:
   lgs.hist.info <- hist(lgs,plot=F)
   
+  dens <- fBasics::dnig(lgs, alpha=alp.est, beta=bet.est, delta=del.est, mu=mu.est)
+  
+  #Compute AIC and BIC for comparison to other fits
+  llk <- sum(log(dens))
+  N<-length(lgs)
+  k<-4
+  aic <- -2* llk + (2*N*k/(N-k-1))
+  bic <- -2* llk + k*log(N)
+  
+  
   if(plotQ==TRUE){
     
     print("Rendering diagnostic plots...")
@@ -61,7 +71,6 @@ null.logplatt.nig.fit <- function(platt.null.vec, alpha.init=NULL, beta.init=NUL
     split.screen( figs = c( 1, 2 ) )
     
     screen(1)
-    dens <- fBasics::dnig(lgs, alpha=alp.est, beta=bet.est, delta=del.est, mu=mu.est)
     
     ylim.max <- max(dens,lgs.hist.info$density)
     xlim.max <- max(lgs,lgs.hist.info$breaks)
@@ -122,6 +131,7 @@ null.logplatt.nig.fit <- function(platt.null.vec, alpha.init=NULL, beta.init=NUL
   prt <- 1-sum(c(plt,fit.probs))
   fit.probs <- c(plt,fit.probs,prt)
   
+  
   fit.info <- cbind(fit.probs, c(plt*length(platt.null.vec), freq.expec, prt*length(platt.null.vec)), c(0,freq.obs,0))
   colnames(fit.info) <- c("interquant.probs", "interquant.exp.cts", "interquant.obs.cts")
   chisq.results <- chisq.test(c(0,freq.obs,0), p = fit.probs)
@@ -129,6 +139,9 @@ null.logplatt.nig.fit <- function(platt.null.vec, alpha.init=NULL, beta.init=NUL
   fit.params <- c(alp.est, bet.est, del.est, mu.est)
   names(fit.params) <- c("alpha.hat", "beta.hat", "delta.hat", "mu.hat")
   
-  return(list(fit.params, fit.info, chisq.results))
+  info.list <- list(fit.params, fit.info, chisq.results, nigFit.lgs, aic, bic)
+  names(info.list) <- c("parameters", "fit.info", "chi.square.test", "fit.obj", "AIC", "BIC")
+  
+  return(info.list)
   
 }

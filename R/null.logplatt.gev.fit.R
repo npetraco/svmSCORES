@@ -46,6 +46,15 @@ null.logplatt.gevd.fit <- function(platt.null.vec, standardizeQ=FALSE, plotQ=FAL
   scale.est <- evFit.lgs$param[2]
   shape.est <- evFit.lgs$param[3]
   
+  dens <- dgev(lgs, loc=loc.est, scale=scale.est, shape=shape.est)
+  
+  #Compute AIC and BIC for comparison to other fits
+  llk <- sum(log(dens))
+  N<-length(lgs)
+  k<-3
+  aic <- -2* llk + (2*N*k/(N-k-1))
+  bic <- -2* llk + k*log(N)
+  
   #This is needed for both plots and fit diagnostics:
   lgs.hist.info <- hist(lgs,plot=F)
   
@@ -56,7 +65,6 @@ null.logplatt.gevd.fit <- function(platt.null.vec, standardizeQ=FALSE, plotQ=FAL
     split.screen( figs = c( 1, 2 ) )
     
     screen(1)
-    dens <- dgev(lgs, loc=loc.est, scale=scale.est, shape=shape.est)
     
     ylim.max <- max(dens,lgs.hist.info$density)
     xlim.max <- max(lgs,lgs.hist.info$breaks)
@@ -113,7 +121,7 @@ null.logplatt.gevd.fit <- function(platt.null.vec, standardizeQ=FALSE, plotQ=FAL
     freq.expec[i] <- fit.probs[i] * length(platt.null.vec)
     
     #print(paste("From:", loi, "to", upi, "prob:", fit.probs[i], "expec cnt:", freq.expec[i]))
-    print(paste("Mid:", upi - loi, "prob:", fit.probs[i], "expec cnt:", freq.expec[i]))
+    #print(paste("Mid:", upi - loi, "prob:", fit.probs[i], "expec cnt:", freq.expec[i]))
   }
   
   plt <- pgev(lgs.hist.info$breaks[1], loc=loc.est, scale=scale.est, shape=shape.est)
@@ -121,7 +129,7 @@ null.logplatt.gevd.fit <- function(platt.null.vec, standardizeQ=FALSE, plotQ=FAL
   prt <- 1-sum(c(plt,fit.probs))
   fit.probs <- c(plt,fit.probs,prt)
   
-  print(lgs.hist.info$mids)
+  #print(lgs.hist.info$mids)
   
   fit.info <- cbind(c(-Inf, lgs.hist.info$mids, Inf), fit.probs, c(plt*length(platt.null.vec), freq.expec, prt*length(platt.null.vec)), c(0,freq.obs,0))
   colnames(fit.info) <- c("interquant.mid","interquant.probs", "interquant.exp.cts", "interquant.obs.cts")
@@ -131,6 +139,9 @@ null.logplatt.gevd.fit <- function(platt.null.vec, standardizeQ=FALSE, plotQ=FAL
   fit.params <- c(loc.est, scale.est, shape.est)
   names(fit.params) <- c("loc.hat", "scale.hat", "shape.hat")
   
-  return(list(fit.params, fit.info, chisq.results))
+  info.list <- list(fit.params, fit.info, chisq.results, evFit.lgs, aic, bic)
+  names(info.list) <- c("parameters", "fit.info", "chi.square.test", "fit.obj", "AIC", "BIC")
+  
+  return(info.list)
   
 }

@@ -16,7 +16,7 @@
 #' @examples
 #' XXXX
 #--------------------------------------------
-null.platt.gaussian.fit <- function(platt.null.vec, standardizeQ=FALSE, plotQ=FALSE) {
+null.logplatt.gaussian.fit <- function(platt.null.vec, standardizeQ=FALSE, plotQ=FALSE) {
     
   #Take the log:
   lgs <- log(platt.null.vec)
@@ -31,7 +31,15 @@ null.platt.gaussian.fit <- function(platt.null.vec, standardizeQ=FALSE, plotQ=FA
   #If data was standardized, these should be pretty close to 0 and 1:
   mu <- normfit$estimate[1]
   sig <- normfit$estimate[2]
+  
+  dens <- dnorm(lgs, mean=mu, sd=sig)
 
+  #Compute AIC and BIC for comparison to other fits
+  llk <- sum(log(dens))
+  N<-length(lgs)
+  k<-2
+  aic <- -2* llk + (2*N*k/(N-k-1))
+  bic <- -2* llk + k*log(N)
   
   #This is needed for both plots and fit diagnostics:
   lgs.hist.info <- hist(lgs,plot=F)
@@ -43,7 +51,6 @@ null.platt.gaussian.fit <- function(platt.null.vec, standardizeQ=FALSE, plotQ=FA
     split.screen( figs = c( 1, 2 ) )
     
     screen(1)
-    dens <- dnorm(lgs, mean=mu, sd=sig)
     
     ylim.max <- max(dens,lgs.hist.info$density)
     xlim.max <- max(lgs,lgs.hist.info$breaks)
@@ -120,7 +127,9 @@ null.platt.gaussian.fit <- function(platt.null.vec, standardizeQ=FALSE, plotQ=FA
   fit.params <- c(mu,sig)
   names(fit.params) <- c("mu.est","sig.est")
   
-  return(list(fit.params, fit.info, chisq.results))
-  #return(list(fit.params, fit.info))
-  
+  info.list <- list(fit.params, fit.info, chisq.results, normfit, aic, bic)
+  names(info.list) <- c("parameters", "fit.info", "chi.square.test", "fit.obj", "AIC", "BIC")
+
+  return(info.list)
+
 }

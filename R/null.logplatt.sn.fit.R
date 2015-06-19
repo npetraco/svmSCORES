@@ -31,6 +31,14 @@ null.logplatt.sn.fit <- function(platt.null.vec, standardizeQ=FALSE, plotQ=FALSE
   om.est <- dp.vec[2]
   alp.est <- dp.vec[3]
   
+  dens <- dsn(lgs, xi=xi.est, omega=om.est, alpha=alp.est, tau=0)
+  
+  #Compute AIC and BIC for comparison to other fits
+  llk <- sum(log(dens))
+  N<-length(lgs)
+  k<-3
+  aic <- -2* llk + (2*N*k/(N-k-1))
+  bic <- -2* llk + k*log(N)
   
   #This is needed for both plots and fit diagnostics:
   lgs.hist.info <- hist(lgs,plot=F)
@@ -42,7 +50,6 @@ null.logplatt.sn.fit <- function(platt.null.vec, standardizeQ=FALSE, plotQ=FALSE
     split.screen( figs = c( 1, 2 ) )
     
     screen(1)
-    dens <- dsn(lgs, xi=xi.est, omega=om.est, alpha=alp.est, tau=0)
     
     ylim.max <- max(dens,lgs.hist.info$density)
     xlim.max <- max(lgs,lgs.hist.info$breaks)
@@ -110,6 +117,9 @@ null.logplatt.sn.fit <- function(platt.null.vec, standardizeQ=FALSE, plotQ=FALSE
   fit.params <- c(xi.est, om.est, alp.est)
   names(fit.params) <- c("xi.hat", "omega.hat", "alpha.hat")
     
-  return(list(fit.params, fit.info, chisq.results))
+  info.list <- list(fit.params, fit.info, chisq.results, sn.fit, aic, bic)
+  names(info.list) <- c("parameters", "fit.info", "chi.square.test", "fit.obj", "AIC", "BIC")
+  
+  return(info.list)
   
 }
