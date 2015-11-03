@@ -129,8 +129,8 @@ zscore.fit <- function(PSNTMP, training.dmat, validation.dmat, training.labels, 
 
 
   #-----------------------------------------SCORE-NULL on the VALIDATION set------------------------------
-  #First obtain a random sample from the fit distributions, the same size as sln, to stand in for sln 
-  #when computing p-values of the NULL and NONNULL
+  #First obtain a random sample from the fit distributions, the same size as the boostrapped null, to stand 
+  #in for it when computing p-values of the NULL and NONNULL
   #------------------------------------------------------------------------------------------------------
 
   cat(sep="\n\n")
@@ -140,16 +140,23 @@ zscore.fit <- function(PSNTMP, training.dmat, validation.dmat, training.labels, 
   
   if(distribution=="gev") {
     
+    log.null.vec.val <- rgev(num.null.sims, loc=log.null.fit[[1]][1], scale=log.null.fit[[1]][2], shape = log.null.fit[[1]][3])
+    
   } else if (distribution=="nig") {
+    
+    log.null.vec.val <- rnig(num.null.sims, alpha=log.null.fit[[1]][1], beta=log.null.fit[[1]][2], delta=log.null.fit[[1]][3], mu=log.null.fit[[1]][4])
     
   } else if (distribution=="sn") {
     
+    log.null.vec.val <- rsn(num.null.sims, xi=log.null.fit[[1]][1], omega=log.null.fit[[1]][2], alpha=log.null.fit[[1]][3])
+    
   } else if (distribution=="lg") {
     
+    log.null.vec.val <- rnorm(num.null.sims, mean=log.null.fit[[1]][1], sd=log.null.fit[[1]][2])
+    
   }
+  #???? ADD AN OPTION FOR A NEW EMPIRICAL SAMPLE ?????
   
 
-  #**validation platt score log null sample from the GEV fit.
-  #gev.log.s.null.vec <- rgev(num.null.sims, loc=ev.fit[[1]][1], scale=ev.fit[[1]][2], shape = ev.fit[[1]][3])
-
+  
 }
