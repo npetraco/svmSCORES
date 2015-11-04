@@ -4,9 +4,10 @@
 \alias{zscore.fit}
 \title{Construct z-scores using a parametric fit distribution to the null Platt scores}
 \usage{
-zscore.fit(PSNTMP, training.dmat, validation.dmat, training.labels,
-  validation.labels, distribution = "gaussian", num.processes,
-  standardizeQ = TRUE, num.bs.iter = 2000, C.param = 0.1, plotQ = FALSE)
+zscore.fit(precomputed.null.scores = NULL, training.dmat, validation.dmat,
+  training.labels, validation.labels, distribution = "gaussian",
+  num.processes, standardizeQ = TRUE, num.bs.iter = 2000, C.param = 0.1,
+  printQ = FALSE, plotQ = FALSE)
 }
 \arguments{
 \item{XXXX}{XXXXXXX}
