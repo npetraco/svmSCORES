@@ -6,9 +6,22 @@
 #' @details A wrapper for the procedure to get null and non-null z-scores from a parametric fit around the bootstrapped
 #' null (log) Platt scores. The log of the boostrapped null scores will be taken automatically.
 #'
-#' @param XXXX XXXXXXX
+#' @param precomputed.null.scores   Optional vector of precomputed Null Platt scores.
+#' @param training.dmat             Training set feature vector matrix 
+#' @param validation.dmat           Validation set feature vector matrix
+#' @param training.labels           Training set labels vector
+#' @param validation.labels         Validation set labels vector
+#' @param distribution="lg"         Parametric distribution to fit training set log Null Platt scores to. Choices are: gev (generalized.extreme.value), nig (normal.inverse.gaussian), sn (skew.normal) or lg (gaussian)
+#' @param num.processes             Number of processes to use if computing Null Platt scores to use in the z-score generation process.
+#' @param standardizeQ              Standardize the Log Platt scores wrt training set log Null Platt scores?
+#' @param num.bs.iter               Number of iterations to use if computing Null Platt scores to use in the z-score generation process.
+#' @param C.param                   C-Penalty parameter for the linear kernel SVM steps.
+#' @param printQ                    Print out intermediate values/diagnostic info?
+#' @param plotQ                     Display diagnostic plots after each major step in the z-score generation process?
 #' 
-#' @return XXXX
+#' @return all.score.calc.info      A list containing: standardization.flag, fit.distribution.name, fit.info.and.diagnostics,
+#' boostrapped.null.platt.scores, score.null.training, score.null.validation, score.nonnull.validation, null.pvalues, 
+#' nonnull.pvalues (UN-SMEARED!!!!!!), null.zvalues, nonnull.zvalues.smeared (SMEARED!!!!!!)
 #'
 #' @references Storey JD, Tibshirani R. Statistical significance for genomewide studies. PNAS 100(16):9440-9445 (2003)
 #'
@@ -365,8 +378,8 @@ zscore.fit <- function(precomputed.null.scores = NULL, training.dmat, validation
   print("NOTE: All p-values computed are empirical wrt the Training Log Null Simulated Platt Scores.")
   print("      Integration of the Fit PDF was not used because we have noticed numerical instabilities for very small/large p-values.")
   cat(sep="\n\n")
-  print("**CAUTION double check z-values graphically and with check.ps.and.zs function,")
-  print("          especially if you used a GEV fit to the Bootstrap Null!!!!!!!!!!!!!!")  
+  print("**CAUTION: Double check z-values graphically and with check.ps.and.zs function,")
+  print("           especially if you used a GEV fit to the Bootstrap Null!!!!!!!!!!!!!!")  
   print("=============================================================================")
     
   all.score.calc.info <- list(

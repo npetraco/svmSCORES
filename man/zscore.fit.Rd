@@ -10,10 +10,34 @@ zscore.fit(precomputed.null.scores = NULL, training.dmat, validation.dmat,
   printQ = FALSE, plotQ = FALSE)
 }
 \arguments{
-\item{XXXX}{XXXXXXX}
+\item{precomputed.null.scores}{Optional vector of precomputed Null Platt scores.}
+
+\item{training.dmat}{Training set feature vector matrix}
+
+\item{validation.dmat}{Validation set feature vector matrix}
+
+\item{training.labels}{Training set labels vector}
+
+\item{validation.labels}{Validation set labels vector}
+
+\item{num.processes}{Number of processes to use if computing Null Platt scores to use in the z-score generation process.}
+
+\item{standardizeQ}{Standardize the Log Platt scores wrt training set log Null Platt scores?}
+
+\item{num.bs.iter}{Number of iterations to use if computing Null Platt scores to use in the z-score generation process.}
+
+\item{C.param}{C-Penalty parameter for the linear kernel SVM steps.}
+
+\item{printQ}{Print out intermediate values/diagnostic info?}
+
+\item{plotQ}{Display diagnostic plots after each major step in the z-score generation process?}
+
+\item{distribution="lg"}{Parametric distribution to fit training set log Null Platt scores to. Choices are: gev (generalized.extreme.value), nig (normal.inverse.gaussian), sn (skew.normal) or lg (gaussian)}
 }
 \value{
-XXXX
+all.score.calc.info      A list containing: standardization.flag, fit.distribution.name, fit.info.and.diagnostics,
+boostrapped.null.platt.scores, score.null.training, score.null.validation, score.nonnull.validation, null.pvalues,
+nonnull.pvalues (UN-SMEARED!!!!!!), null.zvalues, nonnull.zvalues.smeared (SMEARED!!!!!!)
 }
 \description{
 Construct z-scores using a parametric fit distribution to the null Platt scores
