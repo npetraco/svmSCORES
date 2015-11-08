@@ -11,11 +11,12 @@
 #' @param validation.dmat           Validation set feature vector matrix
 #' @param training.labels           Training set labels vector
 #' @param validation.labels         Validation set labels vector
-#' @param distribution="lg"         Parametric distribution to fit training set log Null Platt scores to. Choices are: gev (generalized.extreme.value), nig (normal.inverse.gaussian), sn (skew.normal) or lg (gaussian)
+#' @param distribution="lg"         Parametric distribution to fit training set log Null Platt scores to. Choices are: "gev" (generalized.extreme.value), "nig" (normal.inverse.gaussian), "sn" (skew.normal) or "lg" (gaussian)
 #' @param num.processes             Number of processes to use if computing Null Platt scores to use in the z-score generation process.
 #' @param standardizeQ              Standardize the Log Platt scores wrt training set log Null Platt scores?
 #' @param num.bs.iter               Number of iterations to use if computing Null Platt scores to use in the z-score generation process.
 #' @param C.param                   C-Penalty parameter for the linear kernel SVM steps.
+#' @param pvalue.method             Method to compute requisite p-values. Choices are "empirical" or "integral". See details below for warnings.
 #' @param printQ                    Print out intermediate values/diagnostic info?
 #' @param plotQ                     Display diagnostic plots after each major step in the z-score generation process?
 #' 
@@ -33,6 +34,7 @@ zscore.fit <- function(precomputed.null.scores = NULL, training.dmat, validation
                        standardizeQ = TRUE, 
                        num.bs.iter = 2000,
                        C.param = 0.1,
+                       pvalue.method="empirical",
                        printQ = FALSE,
                        plotQ = FALSE) {
   
@@ -50,7 +52,7 @@ zscore.fit <- function(precomputed.null.scores = NULL, training.dmat, validation
     dist.nme <- "gaussian"
   }
   
-  
+  #---------------------Compute a bootstrap set of Null (and throw-away NonNull) Platt Scores if requested:----------
   print("Beginning Bootstrap Computation of the Null Platt Scores")
   if(is.null(precomputed.null.scores)) {
     
@@ -85,11 +87,11 @@ zscore.fit <- function(precomputed.null.scores = NULL, training.dmat, validation
   }
   #
 
-  # We don't need score.nonnull anymore:
+  # We don't need the boostrapped score.nonnull.vec anymore:
   remove(score.nonnull.vec)
 
   #-----------------------------------------------------------------------------------------------------
-  # Parametric fits for the standardized log null (KNM) bootstrapped Platt scores
+  # Parametric fits for the log null (KNM) bootstrapped (training) Platt scores
   #-----------------------------------------------------------------------------------------------------
   cat(sep="\n\n")
   print(paste("Fitting log null Platt score bootstrap sample to a", dist.nme, "distribution..."))
@@ -150,7 +152,7 @@ zscore.fit <- function(precomputed.null.scores = NULL, training.dmat, validation
   
   if(standardizeQ == TRUE) {
     #-----------------------------------------------------------------------------------------------------
-    # Log and standardize the score.null
+    # Log and standardize the training set (bootstrapped) log score.null
     #-----------------------------------------------------------------------------------------------------
     cat(sep="\n\n")
     print("Standardizing the Log of the Bootstrapped Null Platt Scores...")
@@ -162,7 +164,7 @@ zscore.fit <- function(precomputed.null.scores = NULL, training.dmat, validation
     
   } else {
     #-----------------------------------------------------------------------------------------------------
-    # Just Log the score.null
+    # Just Log the training set (bootstrapped) log score.null
     #-----------------------------------------------------------------------------------------------------
     score.null.vec <- log(score.null.vec)
   }
@@ -171,14 +173,14 @@ zscore.fit <- function(precomputed.null.scores = NULL, training.dmat, validation
 
   
   #-------------------------------------------SCORE-NONNULL on the VALIDATION set-----------------------
-  # Obtain the non null platt scores on the validation set.
+  # Obtain the non null platt scores on the validation set of feature vectors.
   #-----------------------------------------------------------------------------------------------------
   cat(sep="\n\n")
   print("**Computing VALIDATION SET LOG NON-NULL Platt Scores...")
   score.nonnull.vec.val <- log(nonnull.logplatt.on.validation.set(training.dmat, training.labels, validation.dmat, validation.labels, svmtyp="C-classification", kern="linear", pparams=C.param))
   
   if(standardizeQ == TRUE) {
-    #S tandardize the log non-null scores obtained from the validation set wrt the bootstrapped log null distribution:
+    #Standardize the log non-null scores obtained from the validation set wrt the bootstrapped log null distribution:
     print("  Standardizing the Log of the Non-Null Platt Scores wrt Log Null Platt Scores...")
     score.nonnull.vec.val <- (score.nonnull.vec.val - log.s.null.mean)/log.s.null.sd    
   }
@@ -186,8 +188,10 @@ zscore.fit <- function(precomputed.null.scores = NULL, training.dmat, validation
 
 
   #-----------------------------------------SCORE-NULL on the VALIDATION set------------------------------
-  #First obtain a random sample from the fit distributions, the same size as the boostrapped null, to stand 
-  #in for it when computing empirical p-values of the NULL and NONNULL
+  # First obtain a random sample from the fit distributions, the same size as the boostrapped null, to stand 
+  # in for the boostrapped training null when computing empirical p-values of the NULL and NONNULL. This new set
+  # of simulated log null Platt scores (drawn from the fit distribution) will serve as the training log null
+  # Platt scores.
   #------------------------------------------------------------------------------------------------------
 
   cat(sep="\n\n")
@@ -199,9 +203,11 @@ zscore.fit <- function(precomputed.null.scores = NULL, training.dmat, validation
   
   #This process may take a few tries if bad (Infinite) z values are encountered. Put the process in a while loop
   #so it repeats a few times if need be. After it repeats a few times (currently 20), if bad p/z values are still
-  #being encountered, stop. There is probably another problem. Through an error.
+  #being encountered, stop. There is probably another problem. Throw an error.
+  #
+  #NOTE: score.null.vec.standin will serve as the "training set" log null Platt socres.
   continueQ <- FALSE
-  max.val.calc.iters <- 20
+  max.val.calc.iters <- 20 #See above note.
   val.calc.iter <- 1
   while(continueQ == FALSE) {
 
@@ -222,7 +228,6 @@ zscore.fit <- function(precomputed.null.scores = NULL, training.dmat, validation
       score.null.vec.standin <- rnorm(num.null.sims, mean=log.null.fit[[1]][1], sd=log.null.fit[[1]][2])
       
     }
-    #???? ADD AN OPTION FOR A NEW EMPIRICAL SAMPLE ?????
     print("  Done.")
     
     print(paste("----",dist.nme,"Stand in Sample for the Bootstrapped Empirical Log Platt Score Null-----"))
@@ -240,11 +245,14 @@ zscore.fit <- function(precomputed.null.scores = NULL, training.dmat, validation
     }
     
     
-    # Next generate a random sample from the fit distribution to serve as the validation set score-null. 
+    # Next generate a random sample from the fit distribution to serve as the validation set score-null.
+    #
+    #NOTE: score.null.vec.val will serve as the "validation set" log null Platt socres.
     cat(sep="\n\n")
     print(" Sampling Distribution Fit to Bootstrapped Log Null Platt Scores to Serve As the VALIDATION SET LOG NULL Platt Scores...")
     
-    num.null.sims <- nrow(validation.dmat) * (nlevels(validation.labels)-1) # There are this many null values for a validation set
+    # There are this many null values for a validation set:
+    num.null.sims <- nrow(validation.dmat) * (nlevels(validation.labels)-1)
     
     if(distribution=="gev") {
       
@@ -272,9 +280,7 @@ zscore.fit <- function(precomputed.null.scores = NULL, training.dmat, validation
     print(paste(" Extent of Fit Validation Set Null Sampled left tail: ", min(score.null.vec.val)))  
     print(paste(" Extent of Bootstrapped Empirical Null left tail:     ", min(score.null.vec)))
     
-    
     #PAUSE FOR PLOT
-    #fdrID::scores.histograms(sln, gev.log.s.null.vec.val, ylim.max=0.45, xlim.min = -4.5, xlim.max = 4)
     if(plotQ == TRUE) {
       fdrID::scores.histograms(score.null.vec, score.null.vec.val, main="BS Null(Red), Validation Set Null (Green)")
       invisible(readline(prompt="Press [enter] to continue")) 
@@ -288,20 +294,66 @@ zscore.fit <- function(precomputed.null.scores = NULL, training.dmat, validation
     print(" Computing z-values on VALIDATION SET LOG NULL Platt Scores...")
     
     #VALIDATION SET Null p-values and z-values wrt substituting the fit sampled (log) null as emiprical null:
-    p.null <- empiricalPvalues(score.null.vec.standin, score.null.vec.val)
-    z.null <- qnorm(p.null)
+    if(pvalue.method=="empirical") {
+      
+      #VALIDATION SET NULL empirical p-values wrt substituting the fit sampled (log) null as emiprical null:
+      p.null <- empiricalPvalues(score.null.vec.standin, score.null.vec.val)
+      #VALIDATION SET NONNULL empirical p-values wrt substituting the fit sampled (log) null as emiprical null:
+      p.nonnull <- empiricalPvalues(score.null.vec.standin, score.nonnull.vec.val)
+      
+    } else if(pvalue.method=="integral") {
+      
+      if(distribution=="gev") {
+        
+        #VALIDATION SET NULL/NONNULL integral p-values wrt the gev fit bootstrapped (training) log null:
+        p.null <- pgev(score.null.vec.val, loc=log.null.fit[[1]][1], scale=log.null.fit[[1]][2], shape = log.null.fit[[1]][3], lower.tail = F)
+        p.nonnull <- pgev(score.nonnull.vec.val, loc=log.null.fit[[1]][1], scale=log.null.fit[[1]][2], shape = log.null.fit[[1]][3], lower.tail = F)
+        
+      } else if (distribution=="nig") {
+        
+        #VALIDATION SET NULL/NONNULL integral p-values wrt the nig fit bootstrapped (training) log null:
+        p.null <- 1 - pnig(score.null.vec.val, alpha=log.null.fit[[1]][1], beta=log.null.fit[[1]][2], delta=log.null.fit[[1]][3], mu=log.null.fit[[1]][4])
+        p.nonnull <- 1 - pnig(score.nonnull.vec.val, alpha=log.null.fit[[1]][1], beta=log.null.fit[[1]][2], delta=log.null.fit[[1]][3], mu=log.null.fit[[1]][4])
+        
+      } else if (distribution=="sn") {
+        
+        #VALIDATION SET NULL/NONNULL integral p-values wrt the sn fit bootstrapped (training) log null:
+        p.null <- 1 - psn(score.null.vec.val, xi=log.null.fit[[1]][1], omega=log.null.fit[[1]][2], alpha=log.null.fit[[1]][3])
+        p.nonnull <- 1 - psn(score.nonnull.vec.val, xi=log.null.fit[[1]][1], omega=log.null.fit[[1]][2], alpha=log.null.fit[[1]][3])
+        
+      } else if (distribution=="lg") {
+        
+        #VALIDATION SET NULL/NONNULL integral p-values wrt the lg fit bootstrapped (training) log null:
+        p.null <- pnorm(score.null.vec.val, mean=log.null.fit[[1]][1], sd=log.null.fit[[1]][2], lower.tail = F)
+        p.nonnull <- pnorm(score.nonnull.vec.val, mean=log.null.fit[[1]][1], sd=log.null.fit[[1]][2], lower.tail = F)
+        
+      }
+      
+    } else {
+      stop("Pick a method to compute p-values. Your choices are empirical or integral!")
+    }
+
+    #Null z-values:
+    z.null <- qnorm(p.null)    
     
-    #VALIDATION SET NONNULL p-values wrt substituting the fit sampled (log) null as emiprical null:
-    p.nonnull <- empiricalPvalues(score.null.vec.standin, score.nonnull.vec.val)
-    #
-    #"Smear" nonnull zero p-values wrt null used. Return POTENTIAL z values. These still may need some tweeking after
+    #Non-null z-values:
+    #"Smear" nonnull zero p-values wrt null used if necessary. Return POTENTIAL z values. These still may need some tweeking after
     #this routine finshes.  
-    print(" Test smearing negative infinity non-null z-values...")
-    z.nonnull.smeared <- smear.extreme.nonnull.zvalues(p.nonnull, 
-                                                       upper.set.zvalue = (-12), 
-                                                       mu.factor = (-0.5), 
-                                                       p.factor=0.99, 
-                                                       printQ=printQ, plotQ=F)[[3]]
+    if(length(which(qnorm(p.nonnull)==-Inf)) == 0) {
+      print(" No smearing performed for non-null z-values...")
+      z.nonnull.smeared <- qnorm(p.nonnull)
+      z.smearedQ <- "No"
+      
+    } else {
+      print(" **Smearing negative infinity (potential) non-null z-values...")
+      z.nonnull.smeared <- smear.extreme.nonnull.zvalues(p.nonnull, 
+                                                         upper.set.zvalue = (-12), 
+                                                         mu.factor = (-0.5), 
+                                                         p.factor=0.99, 
+                                                         printQ=printQ, plotQ=F)[[3]]
+      z.smearedQ <- "Yes"
+    }
+    #
     #print(z.nonnull.smeared)
     print(" Done.")
     
