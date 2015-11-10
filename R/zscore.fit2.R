@@ -218,18 +218,18 @@ zscore.fit2 <- function(precomputed.null.scores = NULL, training.dmat, validatio
   print("=============================================================================")
   
   all.score.calc.info <- list(
-    standardization.used=standardizeQ,  # Flag if standardization was used.
-    fit.distribution.name=distribution, # Record of parametric distribution name use for fit and Null simulations
-    prep.info$log.null.fit,             # Fit info/diagnostics for chosen parametric fit to Boostrapped Log Null Platt Scores
-    prep.info$score.null.vec,           # Boostrapped Null Platt Scores
-    sim.info$score.null.vec.standin,    # Simulated stand-in for boostrapped Log Null Platt Scores  
-    prep.info$score.null.vec.val,       # Validation Log NonNull Platt Scores  
-    sim.info$score.nonnull.vec.val,     # Simulated Validation Log Null Platt Scores  
-    p.null,                             # Null p-values from score.null.vec.val, and wrt simulated stand-in for boostrapped Log Null Platt Scores  
-    p.nonnull,                          # Un-smeared non-null p-values from score.nonnull.vec.val, and wrt simulated stand-in for boostrapped Log Null Platt Scores
-    z.null,                             # Null z-values from Null p-values.
-    z.smearedQ,                         # Flag if non-null z-values were smeared.  
-    z.nonnull.smeared)                  # Potential (smeared) Non Null z-values. Check acceptability especially if gev fit to bs-null used.
+    standardization.used=standardizeQ,           # Flag if standardization was used.
+    fit.distribution.name=distribution,          # Record of parametric distribution name use for fit and Null simulations
+    prep.info$fit.info.and.diagnostics,          # Fit info/diagnostics for chosen parametric fit to Boostrapped Log Null Platt Scores
+    prep.info$boostrapped.log.null.platt.scores, # Boostrapped Null Platt Scores
+    sim.info$score.null.training,                # Simulated stand-in for boostrapped Log Null Platt Scores  
+    sim.info$score.null.validation,              # Simulated Validation Log Null Platt Scores  
+    prep.info$log.nonnull.platt.scores,          # Validation Log NonNull Platt Scores  
+    p.null,                                      # Null p-values from score.null.vec.val, and wrt simulated stand-in for boostrapped Log Null Platt Scores  
+    p.nonnull,                                   # Un-smeared non-null p-values from score.nonnull.vec.val, and wrt simulated stand-in for boostrapped Log Null Platt Scores
+    z.null,                                      # Null z-values from Null p-values.
+    z.smearedQ,                                  # Flag if non-null z-values were smeared.  
+    z.nonnull.smeared)                           # Potential (smeared) Non Null z-values. Check acceptability especially if gev fit to bs-null used.
   
   # ******No non-null (officially) un-smeard z-values are returned because they need to be modified. See p.nonnull if you want them!
   
