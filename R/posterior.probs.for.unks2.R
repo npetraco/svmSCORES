@@ -67,8 +67,9 @@ posterior.probs.for.unks2 <- function(training.dmat, training.labels, C.param, t
   ucis <- pp.uci.est.func(z.unk)
   lcis <- pp.lci.est.func(z.unk)
   
-  jnk <- data.frame(test.pred.lbls, z.unk, ucis, pps, lcis)
+  posterior.prob.mat <- data.frame(test.pred.lbls, z.unk, ucis, pps, lcis)
+  colnames(posterior.prob.mat) <- c("Pred.Label", "z-score", "Upper.CI", "Post.Prob.Est.", "Lower.CI")
   
-  return(jnk)
+  return(posterior.prob.mat)
   
 }

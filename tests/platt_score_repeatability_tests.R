@@ -32,7 +32,7 @@ pscs <- bootstrap.platt.scores.parallel(
 #Construct a set of z-scores:
 zscs.info <- zscore.fit2(pscs, Ztr, Zval, lbltr, lblval, 
                          pvalue.method = "integral",
-                         distribution="sn",
+                         distribution="nig",
                          num.processes=8, 
                          standardizeQ=T, 
                          num.bs.iter=2000, 
@@ -57,11 +57,11 @@ p.vals <- c(pnorm(z.null), pnorm(z.nonnull))
 
 #First Do Efron lfdr fit to examine fit to f(z)
 library(locfdr)
-fdr.model<-locfdr(qnorm(p.vals), bre = 120, df = 15, pct = 0, pct0 = 1/4, nulltype = 1, type =0, plot = 1, main = " ", sw = 0)
+fdr.model<-locfdr(qnorm(p.vals), bre = 120, df = 5, pct = 0, pct0 = 1/4, nulltype = 1, type =0, plot = 1, main = " ", sw = 0)
 
 minfo <- sampler.prep(p.vals, num.bins=120, degree=15, interceptQ=T, overdispersionQ=F, sampler="jags")
 jsim <- jags(data=minfo$Data, inits=minfo$Initialization.Function, minfo$Model.Parameters, n.iter=10000, n.chains=4, model.file=minfo$BUG.Model.File.Path)
-#jsim
+jsim
 
 posterior.f <- jsim$BUGSoutput$sims.list$lambda
 x <- minfo$Bin.Midpoints
@@ -97,6 +97,22 @@ tinfo3 <- posterior.probs.for.unks2(training.dmat=Ztr, training.labels=lbltr, C.
                                     distribution.fit.info = zscs.info$fit.info.and.diagnostics,
                                     pp.point.est.func=efdrf,
                                     pp.uci.est.func=uci.fdrf,
-                                    pp.lci.est.func=lci.fdrf
-                                   )
+                                    pp.lci.est.func=lci.fdrf)
+tinfo3
 plot(tinfo3[,4],typ="h")
+
+z.unknowns <- tinfo3[,2]
+zoomed.post.prob.plot(c(z.null,z.nonnull), zbounds=c(NA, max(z.unknowns)), 
+                      point.est.func=efdrf, 
+                      upper.est.func=uci.fdrf, 
+                      lower.est.func=lci.fdrf, prob.scale="percent", xlab=NULL, ylab="fdr (%)", main=NULL)
+min(z.unknowns)
+min(c(z.null,z.nonnull))
+max(z.unknowns)
+max(c(z.null,z.nonnull))
+
+points(z.unknowns[which(100*efdrf(z.unknowns) <=5)], 100*efdrf(z.unknowns)[which(100*efdrf(z.unknowns) <=5)],col="green")
+points(z.unknowns[which(100*efdrf(z.unknowns) > 5 & 100*efdrf(z.unknowns) <= 50)], 100*efdrf(z.unknowns)[which(100*efdrf(z.unknowns) > 5 & 100*efdrf(z.unknowns) <= 50)],col="yellow")
+points(z.unknowns[which(100*efdrf(z.unknowns) > 50)], 100*efdrf(z.unknowns)[which(100*efdrf(z.unknowns) > 50)],col="red")
+#Got this one wrong
+points(z.unknowns[402], 100*efdrf(z.unknowns)[402],col="black", pch=16)
