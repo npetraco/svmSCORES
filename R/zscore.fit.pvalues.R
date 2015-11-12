@@ -12,7 +12,7 @@ zscore.fit.pvalues <- function(
   #any problems.
   
   cat(sep="\n\n")
-  print(paste(" Computing", pvalue.method, "p-values on VALIDATION SET log null and and non-null Platt Scores..."))
+  print(paste(" Computing", pvalue.method, "p-values on VALIDATION SET log null and non-null Platt Scores..."))
   
   if(pvalue.method=="integral" & is.null(log.null.fit)) {
     stop("Indicated integral p-values but you forgot to send in the parameters for the distribution. Specify log.null.fit!")

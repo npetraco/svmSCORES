@@ -209,9 +209,18 @@ zscore.fit2 <- function(precomputed.null.scores = NULL, training.dmat, validatio
   
   cat(sep="\n\n")
   print("Computation/simulation of necessary z-values done.")
-  cat(sep="\n\n")
-  print("NOTE: All p-values computed are empirical wrt the Training Log Null Simulated Platt Scores.")
-  print("      Integration of the Fit PDF was not used because we have noticed numerical instabilities for very small/large p-values.")
+  
+  if(pvalue.method == "empirical") {
+    cat(sep="\n\n")
+    print("NOTE: All p-values computed are empirical wrt the Training Log Null Simulated Platt Scores.")
+  }
+  
+  if(pvalue.method == "integral") {
+    cat(sep="\n\n")
+    print("NOTE: P-values were computed wrt the fit parametric distribution to the bootstapped Log Null Platt Scores.")
+    print("      We have noticed numerical instabilities for very small/large p-values using this method!")
+  }
+  
   cat(sep="\n\n")
   print("**CAUTION: Double check z-values graphically and with check.ps.and.zs function,")
   print("           especially if you used a GEV fit to the Bootstrap Null!!!!!!!!!!!!!!")  

@@ -59,6 +59,9 @@ zscore.unk <- function(test.score.vec, pvalue.method, null.vec.training=NULL, di
     stop("Pick a method to compute p-values. Your choices are empirical or integral!")
   }
   
+  #Check for p-values < 0 or > 1. This happens especially for nig fits: 
+  pvalues <- check.for.invalid.pvalues.unk(pvalues, printQ=TRUE)
+  
   return(qnorm(pvalues))
   
 }
