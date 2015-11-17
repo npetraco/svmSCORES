@@ -9,7 +9,7 @@ library(doMC)
 source("/Users/npetraco/codes/R/profiles/sourceme.R")
 source("/Users/npetraco/codes/R/error_rate_utilities/sourceme.R")
 
-fv.mat <- read.binary.profiles("/Users/npetraco/latex/papers/posterior_error/comparison_examples/NIST_Martin_screwdriver/NFIToolmark_Biasotti_Murdock_features_15-30_44-SUBSET_3DX3P.bin")
+fv.mat <- read.binary.profiles2("/Users/npetraco/latex/papers/posterior_error/comparison_examples/NIST_Martin_screwdriver/NFIToolmark_Biasotti_Murdock_features_15-30_44-SUBSET_3DX3P.bin")
 
 pca.model<-prcomp(fv.mat,center=TRUE,scale=FALSE)
 plot(pca.model)
