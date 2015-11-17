@@ -1,3 +1,6 @@
+#--------------------------------------------------------------------------
+#Internal function. Compute requisite p-values in the z-score fit process.
+#--------------------------------------------------------------------------
 zscore.fit.pvalues <- function(
                        score.null.vec.standin, 
                        score.null.vec.val, 

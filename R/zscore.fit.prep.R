@@ -1,23 +1,10 @@
-#--------------------------------------------
-#' @title XXXX
-#' 
-#' @description XXXXX
-#' 
-#' @details XXXX
-#'
-#' @param XXXX
-#' 
-#' @return XXXX
-#'
-#' @references Storey JD, Tibshirani R. Statistical significance for genomewide studies. PNAS 100(16):9440-9445 (2003)
-#'
-#' @examples
-#' XXXX
-#--------------------------------------------
+#------------------------------------------------------------------------------
+#Internal function. The prepare intermediates for the z-score fitting process
+#------------------------------------------------------------------------------
 zscore.fit.prep <- function(precomputed.null.scores = NULL, 
                        training.dmat, validation.dmat, 
                        training.labels, validation.labels,
-                       distribution="gaussian", 
+                       distribution="lg", 
                        num.processes,
                        standardizeQ = TRUE, 
                        num.bs.iter = 2000,

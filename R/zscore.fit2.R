@@ -1,3 +1,5 @@
+library(fdrID)
+
 #--------------------------------------------
 #' @title Construct z-scores using a parametric fit distribution to the null Platt scores
 #' 
@@ -6,7 +8,7 @@
 #' @details A wrapper for the procedure to get null and non-null z-scores from a parametric fit around the bootstrapped
 #' null (log) Platt scores. The log of the boostrapped null scores will be taken automatically.
 #'
-#' @param precomputed.null.scores   Optional vector of precomputed Null Platt scores.
+#' @param precomputed.null.scores   Optional vector of precomputed Null Platt scores. If left NULL, bootstrap calculation for null Platt scores will be computed.
 #' @param training.dmat             Training set feature vector matrix 
 #' @param validation.dmat           Validation set feature vector matrix
 #' @param training.labels           Training set labels vector

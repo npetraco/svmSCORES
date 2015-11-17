@@ -10,7 +10,7 @@ zscore.fit2(precomputed.null.scores = NULL, training.dmat, validation.dmat,
   pvalue.method = "empirical", printQ = FALSE, plotQ = FALSE)
 }
 \arguments{
-\item{precomputed.null.scores}{Optional vector of precomputed Null Platt scores.}
+\item{precomputed.null.scores}{Optional vector of precomputed Null Platt scores. If left NULL, bootstrap calculation for null Platt scores will be computed.}
 
 \item{training.dmat}{Training set feature vector matrix}
 

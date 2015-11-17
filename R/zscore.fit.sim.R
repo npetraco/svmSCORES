@@ -1,3 +1,6 @@
+#--------------------------------------------------------------------------
+#Internal function. The simulation portions of the z-score fitting process
+#--------------------------------------------------------------------------
 zscore.fit.sim <- function(score.null.vec, distribution, log.null.fit, 
                            nrow.validation.dmat, nlevels.validation.labels, 
                            printQ=FALSE, plotQ=FALSE) {
