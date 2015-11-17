@@ -9,14 +9,57 @@ library(doMC)
 source("/Users/npetraco/codes/R/profiles/sourceme.R")
 source("/Users/npetraco/codes/R/error_rate_utilities/sourceme.R")
 
-Ztr <- as.matrix(read.csv("/Users/npetraco/latex/papers/posterior_error/comparison_examples/NIST_Martin_screwdriver/NFIToolmark_Biasotti_Murdock_features_15-30_Ztr.csv",header=T)[,2:199])
-Zval <- as.matrix(read.csv("/Users/npetraco/latex/papers/posterior_error/comparison_examples/NIST_Martin_screwdriver/NFIToolmark_Biasotti_Murdock_features_15-30_Zval.csv",header=T)[,2:199])
-Zte <- as.matrix(read.csv("/Users/npetraco/latex/papers/posterior_error/comparison_examples/NIST_Martin_screwdriver/NFIToolmark_Biasotti_Murdock_features_15-30_Zte.csv",header=T)[,2:199])
+fv.mat <- read.binary.profiles("/Users/npetraco/latex/papers/posterior_error/comparison_examples/NIST_Martin_screwdriver/NFIToolmark_Biasotti_Murdock_features_15-30_44-SUBSET_3DX3P.bin")
 
-label.mat <- read.csv("/Users/npetraco/latex/papers/posterior_error/comparison_examples/NIST_Martin_screwdriver/NFIToolmark_Biasotti_Murdock_features_15-30_SET-LABELS.csv",header=T)[,2:4]
-lbltr <- as.factor(label.mat[,1])
-lblval <- as.factor(label.mat[,2])
-lblte <- as.factor(label.mat[,3])
+pca.model<-prcomp(fv.mat,center=TRUE,scale=FALSE)
+plot(pca.model)
+summary(pca.model)
+
+M<-45                                                         #Pick dimension
+Z<-predict(pca.model)[,1:M]                                   #Grab PCA scores
+lbl <- gl(44,30)
+
+#Training set:
+trainobs<-createDataPartition(lbl,p=(1/3),list=F)
+#count.group.replicates(lbl[trainobs])
+Ztr<-Z[trainobs,]
+lbltr<-lbl[trainobs]
+#Tmp to split val and test:
+Zvalte<-Z[-trainobs,]
+lblvalte<-lbl[-trainobs]
+#Validation set:                                    
+valobs<-createDataPartition(lblvalte,p=0.5,list=F)
+Zval<-Zvalte[valobs,]
+lblval<-lblvalte[valobs]
+#Test Set:
+Zte<-Zvalte[-valobs,]
+lblte<-lblvalte[-valobs]
+
+Z <- Ztr
+lbl <- lbltr
+rownames(Z)<-NULL
+colnames(Z)<-NULL
+pen.param<-0.1
+ind.vec<-NULL
+for(i in 1:nrow(Z))
+{
+  #i <- 1
+  Z.heldout<-t(as.matrix(Z[i,]))
+  lbl.heldout<-lbl[i]
+  
+  Z.kept<-Z[-i,]
+  lbl.kept<-lbl[-i]
+  svm.model<-svm(Z.kept,lbl.kept,scale=FALSE,type="C-classification",kernel="linear",cost=pen.param,fitted=F,probability=F)
+  pred<-predict(svm.model,Z.heldout)
+  #print(pred==lbl.heldout)
+  #  prob.vec<-attr(pred, "probabilities")[,]
+  ind.vec<-c(ind.vec,pred==lbl.heldout)
+  curr.err.perc <- 100 - (sum(ind.vec)/length(ind.vec) * 100)
+  print(paste("Done iter:",i, "Correct??:","Pred:",pred,"Actual:",lbl.heldout,pred==lbl.heldout, ". Current err %:", curr.err.perc))
+  
+}
+(1-sum(ind.vec)/nrow(Z))*100
+#~2.3% error on Ztr at 30D
 
 #Get a set of bootstrapped null Platt scores:
 pscs <- bootstrap.platt.scores.parallel(
@@ -32,7 +75,7 @@ pscs <- bootstrap.platt.scores.parallel(
 #Construct a set of z-scores:
 zscs.info <- zscore.fit2(pscs, Ztr, Zval, lbltr, lblval, 
                          pvalue.method = "integral",
-                         distribution="gev",
+                         distribution="lg",
                          num.processes=8, 
                          standardizeQ=T, 
                          num.bs.iter=2000, 
@@ -46,12 +89,12 @@ z.null <- zscs.info$null.zvalues
 z.nonnull <- zscs.info$nonnull.zvalues.smeared
 p.nonnull <- zscs.info$nonnull.pvalues
 
-z.nonnull.pot <- smear.extreme.nonnull.zvalues(
-  zscs.info$nonnull.pvalues,
-  upper.set.zvalue = (-12), 
-  mu.factor = (-3.8), 
-  p.factor=0.9999, plotQ=T)[[3]]
-z.nonnull <- z.nonnull.pot
+# z.nonnull.pot <- smear.extreme.nonnull.zvalues(
+#   zscs.info$nonnull.pvalues,
+#   upper.set.zvalue = (-12), 
+#   mu.factor = (-3.8), 
+#   p.factor=0.9999, plotQ=T)[[3]]
+# z.nonnull <- z.nonnull.pot
 
 cbind(p.nonnull,z.nonnull)
 check.ps.and.zs(null.p.values = pnorm(z.null), nonnull.p.values = pnorm(z.nonnull), printQ = T, plotQ = T)
@@ -64,9 +107,9 @@ p.vals <- c(pnorm(z.null), pnorm(z.nonnull))
 
 #First Do Efron lfdr fit to examine fit to f(z)
 library(locfdr)
-fdr.model<-locfdr(qnorm(p.vals), bre = 120, df = 8, pct = 0, pct0 = 1/4, nulltype = 1, type =0, plot = 1, main = " ", sw = 0)
+fdr.model<-locfdr(qnorm(p.vals), bre = 120, df = 10, pct = 0, pct0 = 1/4, nulltype = 1, type =0, plot = 1, main = " ", sw = 0)
 
-minfo <- sampler.prep(p.vals, num.bins=120, degree=8, interceptQ=T, overdispersionQ=F, sampler="jags")
+minfo <- sampler.prep(p.vals, num.bins=120, degree=10, interceptQ=T, overdispersionQ=F, sampler="jags")
 jsim <- jags(data=minfo$Data, inits=minfo$Initialization.Function, minfo$Model.Parameters, n.iter=10000, n.chains=4, model.file=minfo$BUG.Model.File.Path)
 jsim
 
@@ -122,8 +165,9 @@ max(c(z.null,z.nonnull))
 points(z.unknowns[which(100*efdrf(z.unknowns) <=5)], 100*efdrf(z.unknowns)[which(100*efdrf(z.unknowns) <=5)],col="green")
 points(z.unknowns[which(100*efdrf(z.unknowns) > 5 & 100*efdrf(z.unknowns) <= 50)], 100*efdrf(z.unknowns)[which(100*efdrf(z.unknowns) > 5 & 100*efdrf(z.unknowns) <= 50)],col="yellow")
 points(z.unknowns[which(100*efdrf(z.unknowns) > 50)], 100*efdrf(z.unknowns)[which(100*efdrf(z.unknowns) > 50)],col="red")
-#Got this one wrong
-points(z.unknowns[402], 100*efdrf(z.unknowns)[402],col="black", pch=16)
+#Got these one wrong
+wrong.idxs <- which((tinfo3[,1] == lblte)==FALSE)
+data.frame(lblte[wrong.idxs],tinfo3[wrong.idxs,])
+points(z.unknowns[wrong.idxs], 100*efdrf(z.unknowns)[wrong.idxs],col="black", pch=16)
 
-
-#Try with smaller PCA space, getting more wrong answers. See if they come out with high fdrs. then argue calibration is good??
+length(wrong.idxs)/nrow(Zte) * 100

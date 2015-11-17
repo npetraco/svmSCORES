@@ -2,22 +2,34 @@
 % Please edit documentation in R/zscore.unk.R
 \name{zscore.unk}
 \alias{zscore.unk}
-\title{XXXX}
+\title{zscore.unk}
 \usage{
 zscore.unk(test.score.vec, pvalue.method, null.vec.training = NULL,
   distribution = NULL, dist.fit.info = NULL)
 }
 \arguments{
-\item{XXXX}{}
+\item{test.score.vec}{A set of Platt scores on a test set. One score for each "unknown"}
+
+\item{pvalue.method}{"empirical" or "integral"}
+
+\item{null.vec.training}{Validation set of null scores needed if pvalue.method = "empirical"}
+
+\item{distribution}{Name of distribution info pvalue.method = "integral"}
+
+\item{dist.fit.info}{Distribution fit info if pvalue.method = "integral"}
 }
 \value{
-XXXX
+a vector of z-values on the test set.
 }
 \description{
-XXXXX
+Compute z-scores on a set of test feature vectors (can be only one).
 }
 \details{
-XXXX
+At this pont Platt scores on a test set should have been obtained from an SVM fit to a training set. That should have
+occured in the first phase of \code{posterior.probs.for.unks}. The Platt scores on the test set are transformed into z-scores
+(one for each unknown) via the distribution fit to the bootstrapped null. If the distribution name and fit info is supplied
+integral p-values are computed. If the validation set of null Platt scores is supplied, empirical p-values will be computed.
+The p-values on the test set are then checked for invalid values (< 0 or > 1) and then transformed to z-values.
 }
 \examples{
 XXXX

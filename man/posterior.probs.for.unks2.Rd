@@ -2,7 +2,7 @@
 % Please edit documentation in R/posterior.probs.for.unks2.R
 \name{posterior.probs.for.unks2}
 \alias{posterior.probs.for.unks2}
-\title{XXXX}
+\title{posterior.probs.for.unks}
 \usage{
 posterior.probs.for.unks2(training.dmat, training.labels, C.param, test.dmat,
   standardizeQ = FALSE, mean.log.null.score = NULL,
@@ -12,13 +12,40 @@ posterior.probs.for.unks2(training.dmat, training.labels, C.param, test.dmat,
   pp.lci.est.func)
 }
 \arguments{
-\item{XXXX}{}
+\item{training.dmat}{Training data matrix}
+
+\item{training.labels}{Labels for training data}
+
+\item{C.param}{Penalty parameter for linear SVM}
+
+\item{test.dmat}{Test data matrix}
+
+\item{standardizeQ}{Standardize all feature vectors?}
+
+\item{mean.log.null.score}{The mean to standardize by.}
+
+\item{sd.log.null.score}{The sd to standardize by.}
+
+\item{pvalue.method}{"empirical" or "integral"}
+
+\item{null.vec.training}{Training log null values from boostrap calculation. Cf. \code{bootstrap.platt.scores.parallel} or Cf \code{bootstrap.platt.scores}}
+
+\item{distribution.name}{Name of a distribution log null boostrapped Platt scores was fit too. Current choices are
+"gev" (generalized extreme value), "nig" (normal inverse gaussian), "sn" (skew normal) and "lg" (gaussian)}
+
+\item{distribution.fit.info}{Fit information}
+
+\item{pp.point.est.func}{The posterior probability point estimate interpolation function.}
+
+\item{pp.uci.est.func}{The posterior probability upper credibility/confidence bound interpolation function from training/validation set fit}
+
+\item{pp.lci.est.func}{The posterior probability lower credibility/confidence bound interpolation function from training/validation set fit}
 }
 \value{
-XXXX
+An info matrix containing for each input test feature vector: the predicted label, the z-score,  posterior prob. upper CI, posterior prob. mean,  posterior prob. lower CI
 }
 \description{
-XXXXX
+Determines labels and computes posterior probabilities for unknown feature vectors.
 }
 \details{
 XXXX

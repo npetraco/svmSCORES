@@ -1,13 +1,27 @@
 #--------------------------------------------
-#' @title XXXX
+#' @title posterior.probs.for.unks
 #' 
-#' @description XXXXX
+#' @description Determines labels and computes posterior probabilities for unknown feature vectors.
 #' 
 #' @details XXXX
 #'
-#' @param XXXX
+#' @param training.dmat         Training data matrix
+#' @param training.labels       Labels for training data
+#' @param C.param               Penalty parameter for linear SVM
+#' @param test.dmat             Test data matrix
+#' @param standardizeQ          Standardize all feature vectors?
+#' @param mean.log.null.score   The mean to standardize by.
+#' @param sd.log.null.score     The sd to standardize by.
+#' @param pvalue.method         "empirical" or "integral"
+#' @param null.vec.training     Training log null values from boostrap calculation. Cf. \code{bootstrap.platt.scores.parallel} or Cf \code{bootstrap.platt.scores}
+#' @param distribution.name     Name of a distribution log null boostrapped Platt scores was fit too. Current choices are 
+#' "gev" (generalized extreme value), "nig" (normal inverse gaussian), "sn" (skew normal) and "lg" (gaussian) 
+#' @param distribution.fit.info Fit information
+#' @param pp.point.est.func     The posterior probability point estimate interpolation function.
+#' @param pp.uci.est.func       The posterior probability upper credibility/confidence bound interpolation function from training/validation set fit
+#' @param pp.lci.est.func       The posterior probability lower credibility/confidence bound interpolation function from training/validation set fit
 #' 
-#' @return XXXX
+#' @return An info matrix containing for each input test feature vector: the predicted label, the z-score,  posterior prob. upper CI, posterior prob. mean,  posterior prob. lower CI
 #'
 #' @references Storey JD, Tibshirani R. Statistical significance for genomewide studies. PNAS 100(16):9440-9445 (2003)
 #'

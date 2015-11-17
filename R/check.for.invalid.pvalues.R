@@ -1,3 +1,24 @@
+#--------------------------------------------
+#' @title check.for.invalid.pvalues
+#' 
+#' @description Check to see if p-values < 0 or > 1 are encountered in a list of null and non-null p-values.
+#' 
+#' @details We noticed that some of the distributions fit to the log null Platt scores can yield invalid p-values 
+#' (mostly slightly negative) deep into the tails. This happens especially for the NIG distributions. This is a handy 
+#' utility function to check a for bad p-values. It's general to check for bad p-values amongst null and non-null
+#' sets, assuming they have been returned from the \code{zscore.fit.pvalues} function. If bad p-values are encountered, 
+#' they are replaced with 0 (for negative p-values) or 1 (for positive p-values).
+#' 
+#' @param pvalue.info    A two element list. Each element is a vector of p-values. Cf. \code{zscore.fit.pvalues}
+#' @param printQ         Diagnostic info?  
+#' 
+#' @return A potentially modified pvalue.info type list with bad p-valued replaced.
+#'
+#' @references Storey JD, Tibshirani R. Statistical significance for genomewide studies. PNAS 100(16):9440-9445 (2003)
+#'
+#' @examples
+#' XXXX
+#--------------------------------------------
 check.for.invalid.pvalues <-function(pvalue.info, printQ=FALSE) {
   
   pnulls <- pvalue.info$null.p.values

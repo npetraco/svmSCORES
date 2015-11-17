@@ -1,13 +1,21 @@
 #--------------------------------------------
-#' @title XXXX
+#' @title zscore.unk
 #' 
-#' @description XXXXX
+#' @description Compute z-scores on a set of test feature vectors (can be only one). 
 #' 
-#' @details XXXX
+#' @details At this pont Platt scores on a test set should have been obtained from an SVM fit to a training set. That should have
+#' occured in the first phase of \code{posterior.probs.for.unks}. The Platt scores on the test set are transformed into z-scores
+#' (one for each unknown) via the distribution fit to the bootstrapped null. If the distribution name and fit info is supplied
+#' integral p-values are computed. If the validation set of null Platt scores is supplied, empirical p-values will be computed.
+#' The p-values on the test set are then checked for invalid values (< 0 or > 1) and then transformed to z-values. 
 #'
-#' @param XXXX
+#' @param test.score.vec    A set of Platt scores on a test set. One score for each "unknown"
+#' @param pvalue.method     "empirical" or "integral"
+#' @param null.vec.training Validation set of null scores needed if pvalue.method = "empirical"
+#' @param distribution      Name of distribution info pvalue.method = "integral"
+#' @param dist.fit.info     Distribution fit info if pvalue.method = "integral"
 #' 
-#' @return XXXX
+#' @return a vector of z-values on the test set.
 #'
 #' @references Storey JD, Tibshirani R. Statistical significance for genomewide studies. PNAS 100(16):9440-9445 (2003)
 #'
